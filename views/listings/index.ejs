@@ -1,0 +1,28 @@
+<% layout('layout/boilerplate') %>
+<h3>All Listings</h3>
+<div class="row row-cols-lg-3 row-cols-md-3 row-cols-sm-1">
+  <% for (let listing of listings) { %>
+    <div class="col">
+      <a href="/listings/<%=listing._id%>" class="listing-link">
+        <div class="card mb-4" style="width: 100%;">
+          <img src="<%= listing.image.url %>" class="card-img-top" alt="listing_image" style="height: 20rem">
+          <div class="card-img-overlay"></div>
+          <div class="card-body">
+            <h5 class="card-title"><%= listing.title %></h5>
+            <h6 class="card-subtitle mb-2 text-muted">
+            <% if (listing.price) { %>
+               &#8377;<%= listing.price%> / night
+              <% } else { %>
+                Price not available
+              <% } %>
+            </h6>
+            <p class="card-text"><%= listing.description %></p>
+            <a href="/listings/<%= listing._id %>" class="btn btn-primary">View Details</a>
+          </div>
+        </div>
+      </a>
+    </div>
+  <% } %>
+</div>
+
+
