@@ -16,6 +16,8 @@ const LocalStrategy = require("passport-local");
 const User = require("./model/user.js")
 
 const userRouter = require("./routes/user.js")
+const {isLoggedIn} = require("./middleware.js");
+
 
 // ================== DATABASE CONNECTION ==================
 const MONGO_URL = "mongodb://127.0.0.1:27017/wanderLust";
@@ -107,13 +109,13 @@ app.get(
 );
 
 // New Route - Show form to create new listing
-app.get("/listings/new", (req, res) => {
+app.get("/listings/new", isLoggedIn, (req, res) => {
   res.render("listings/new.ejs");
 });
 
 // Show Route - Show details of one listing (with reviews populated)
 app.get(
-  "/listings/:id",
+  "/listings/:id", isLoggedIn,
   wrapAsync(async (req, res) => {
     const { id } = req.params;
     const listing = await Listing.findById(id).populate("reviews");
@@ -128,7 +130,7 @@ app.get(
 
 // Create Route - Add new listing to DB
 app.post(
-  "/listings",
+  "/listings", isLoggedIn,
   wrapAsync(async (req, res) => {
     let result = listingSchema.validate(req.body);
     console.log(result);
@@ -145,7 +147,7 @@ app.post(
 
 // Edit Route - Show form to edit listing
 app.get(
-  "/listings/:id/edit",
+  "/listings/:id/edit", isLoggedIn,
   wrapAsync(async (req, res) => {
     const { id } = req.params;
     const listing = await Listing.findById(id);
@@ -158,7 +160,7 @@ app.get(
 
 // Update Route - Update listing in DB
 app.put(
-  "/listings/:id",
+  "/listings/:id", isLoggedIn,
   wrapAsync(async (req, res) => {
     const { id } = req.params;
     await Listing.findByIdAndUpdate(
@@ -172,7 +174,7 @@ app.put(
 
 // Delete Route - Delete a listing
 app.delete(
-  "/listings/:id",
+  "/listings/:id", isLoggedIn,
   wrapAsync(async (req, res) => {
     const { id } = req.params;
     await Listing.findByIdAndDelete(id);
