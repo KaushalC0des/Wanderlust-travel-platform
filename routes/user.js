@@ -5,6 +5,7 @@ const router = express.Router();
 const User = require("../model/user.js");
 const wrapAsync = require("../utils/wrapAsync.js");
 const passport = require("passport");
+const { saveRedirectUrl} = require("../middleware.js");
 
 // ================== SIGNUP FORM ==================
 router.get("/signup", (req, res) => {
@@ -39,15 +40,30 @@ router.get("/login", (req,res) => {
 
 router.post(
   "/login",
+  saveRedirectUrl,  // middleware that stores the redirect URL
   passport.authenticate("local", {
     failureRedirect: "/login",
     failureFlash: true,
   }),
   (req, res) => {
     req.flash("success", "Welcome back to WanderLust!");
-    res.redirect("/listings");
+
+    // 🧠 Fallback: if no redirect URL, go to listings
+    const redirectUrl = res.locals.redirectUrl || "/listings";
+
+    res.redirect(redirectUrl);
   }
 );
+
+router.get("/logout", (req,res,next) => {
+  req.logout((err) => {
+    if(err){
+      next(err);
+    }
+    req.flash("success", "you are logged out");
+    res.redirect("/listings");  
+  });
+})
 
 
 
