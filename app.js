@@ -16,7 +16,7 @@ const LocalStrategy = require("passport-local");
 const User = require("./model/user.js")
 
 const userRouter = require("./routes/user.js")
-const {isLoggedIn} = require("./middleware.js");
+const {isLoggedIn, isOwner, isReviewAuthor} = require("./middleware.js");
 
 
 // ================== DATABASE CONNECTION ==================
@@ -115,45 +115,75 @@ app.get("/listings/new", isLoggedIn, (req, res) => {
 });
 
 // Show Route - Show details of one listing (with reviews populated)
+// Show Route - Show details of one listing (with reviews and author populated)
 app.get(
-  "/listings/:id", isLoggedIn,
+  "/listings/:id",
   wrapAsync(async (req, res) => {
     const { id } = req.params;
-    const listing = await Listing.findById(id).populate("reviews");
+    const listing = await Listing.findById(id)
+      .populate({
+        path: "reviews",
+        populate: { path: "author" }, // 👈 populate the review author
+      })
+      .populate("owner"); // also populate listing owner
+
     if (!listing) {
-      req.flash("error", "listing you requested for does not exist");
-      res.redirect("/listings");
-      // throw new ExpressError(404, "Listing Not Found!");
+      req.flash("error", "Listing you requested does not exist!");
+      return res.redirect("/listings");
     }
+
     res.render("listings/show.ejs", { listing });
   })
 );
 
+
 // Create Route - Add new listing to DB
 app.post(
-  "/listings", isLoggedIn,
+  "/listings",
+  isLoggedIn,
   wrapAsync(async (req, res) => {
-    let result = listingSchema.validate(req.body);
-    console.log(result);
-
-    if (result.error) {
-      throw new ExpressError(400, result.error);
+    // Validate the incoming data using Joi
+    const { error } = listingSchema.validate(req.body);
+    if (error) {
+      const errMsg = error.details.map((el) => el.message).join(",");
+      throw new ExpressError(400, errMsg);
     }
 
+    // Create the new listing
     const newListing = new Listing(req.body.listing);
+
+    // ✅ Automatically assign the logged-in user as the owner
+    console.log(req.user._id);
+    newListing.owner = req.user._id; // passport save user related info in this req.user._id
+
+    // ✅ Provide a fallback image if no URL is provided
+    if (!newListing.image || !newListing.image.url) {
+      newListing.image = {
+        url: "https://placehold.co/600x400/gray/white/png?text=No+Image",
+        filename: "default",
+      };
+    }
+
+    // Save and redirect
     await newListing.save();
-    res.redirect("/listings");
+
+    req.flash("success", "New listing created successfully!");
+    res.redirect(`/listings/${newListing._id}`);
   })
 );
 
+
 // Edit Route - Show form to edit listing
 app.get(
-  "/listings/:id/edit", isLoggedIn,
+  "/listings/:id/edit", 
+  isLoggedIn,
+  isOwner,
   wrapAsync(async (req, res) => {
     const { id } = req.params;
     const listing = await Listing.findById(id);
     if (!listing) {
-      throw new ExpressError(404, "Listing Not Found!");
+      req.flash("error", "Listing Not Found!");
+      return res.redirect("/listings");
     }
     res.render("listings/edit.ejs", { listing });
   })
@@ -161,38 +191,57 @@ app.get(
 
 // Update Route - Update listing in DB
 app.put(
-  "/listings/:id", isLoggedIn,
+  "/listings/:id", 
+  isLoggedIn,
+  isOwner,
+  validateListing,
   wrapAsync(async (req, res) => {
     const { id } = req.params;
+    let listing = await Listing.findById(id);
+
     await Listing.findByIdAndUpdate(
       id,
       { ...req.body.listing },
       { new: true, runValidators: true }
     );
+
+    req.flash("success", "Listing updated successfully");
     res.redirect(`/listings/${id}`);
   })
 );
 
+
 // Delete Route - Delete a listing
 app.delete(
-  "/listings/:id", isLoggedIn,
+  "/listings/:id", 
+  isLoggedIn,
+  isOwner,
   wrapAsync(async (req, res) => {
     const { id } = req.params;
     await Listing.findByIdAndDelete(id);
+    req.flash("success","Listing deleted successfully!")
     res.redirect("/listings");
   })
 );
 
 // ================== REVIEWS ROUTE ==================
-app.post("/listings/:id/reviews", validateReview, wrapAsync(async (req, res) => {
+app.post("/listings/:id/reviews", validateReview, isLoggedIn, wrapAsync(async (req, res) => {
   console.log("➡️ Incoming review request:", req.body);
 
-  const listing = await Listing.findById(req.params.id);
+  const listing = await Listing.findById(req.params.id)
+    .populate({
+      path: "reviews",
+      populate: {
+        path : "author"
+      },
+    })
+    .populate("owner");
   if (!listing) {
     throw new ExpressError(404, "Listing Not Found!");
   }
 
   const newReview = new Review(req.body.review);
+  newReview.author = req.user._id;
   listing.reviews.push(newReview);
 
   await newReview.save();
@@ -203,7 +252,10 @@ app.post("/listings/:id/reviews", validateReview, wrapAsync(async (req, res) => 
 }));
 
 // Delete Review Route
-app.delete("/listings/:id/reviews/:reviewId", wrapAsync(async (req, res) => {
+app.delete("/listings/:id/reviews/:reviewId", 
+  isLoggedIn,
+  isReviewAuthor, 
+  wrapAsync(async (req, res) => {
   const { id, reviewId } = req.params;
   await Listing.findByIdAndUpdate(id, { $pull: { reviews: reviewId } });
   await Review.findByIdAndDelete(reviewId);
