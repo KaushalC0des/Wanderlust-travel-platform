@@ -1,7 +1,118 @@
 <% layout('layout/boilerplate') %>
 <!-- <%- include("../includes/flash") %> -->
-<h3>All Listings</h3>
-<div class="row row-cols-lg-3 row-cols-md-3 row-cols-sm-1">
+<!-- <h3>All Listings</h3> -->
+
+<style>
+  #filters {
+  display: flex;
+  flex-wrap: nowrap;             /* Prevent wrapping */
+  overflow-x: auto;              /* Horizontal scroll */
+  scrollbar-width: none;         /* Hide scrollbar (Firefox) */
+  -ms-overflow-style: none;      /* Hide scrollbar (IE/Edge) */
+  padding: 1rem 0;
+  gap: 2rem;                     /* Space between icons */
+}
+
+#filters::-webkit-scrollbar {
+  display: none;                 /* Hide scrollbar (Chrome, Safari) */
+}
+
+.filter {
+  flex: 0 0 auto;                /* Prevent shrinking */
+  text-align: center;
+  opacity: 0.7;
+  transition: opacity 0.2s;
+}
+
+.filter:hover {
+  opacity: 1;
+  cursor: pointer;
+}
+
+.filter i {
+  font-size: 1.5rem;
+  margin-bottom: 0.3rem;
+}
+
+.filter p {
+  font-size: 0.8rem;
+  margin: 0;
+}
+
+.tax-toggle {
+  flex: 0 0 auto;
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+}
+
+.tax-info {
+  display: none;
+}
+
+</style>
+
+<div id="filters">
+
+  <a href="/listings/category/Trending" class="filter">
+    <div><i class="fa-solid fa-fire"></i></div>
+    <p>Trending</p>
+  </a>
+
+  <a href="/listings/category/Rooms" class="filter">
+    <div><i class="fa-solid fa-bed"></i></div>
+    <p>Rooms</p>
+  </a>
+
+  <a href="/listings/category/Adventure" class="filter">
+    <div><i class="fa-solid fa-mountain"></i></div>
+    <p>Adventure</p>
+  </a>
+
+  <a href="/listings/category/Nature" class="filter">
+    <div><i class="fa-solid fa-tree"></i></div>
+    <p>Nature</p>
+  </a>
+
+  <a href="/listings/category/Castles" class="filter">
+    <div><i class="fa-brands fa-fort-awesome"></i></div>
+    <p>Castles</p>
+  </a>
+
+  <a href="/listings/category/Amazing Pools" class="filter">
+    <div><i class="fa-brands fa-person-swimming"></i></div>
+    <p>Amazing Pools</p>
+  </a>
+
+  <a href="/listings/category/Camping" class="filter">
+    <div><i class="fa-solid fa-campground"></i></div>
+    <p>Camping</p>
+  </a>
+
+  <a href="/listings/category/Farms" class="filter">
+    <div><i class="fa-solid fa-cow"></i></div>
+    <p>Farms</p>
+  </a>
+
+  <a href="/listings/category/Arctic" class="filter">
+    <div><i class="fa-regular fa-snowflake"></i></div>
+    <p>Arctic</p>
+  </a>
+
+  <div class="tax-toggle">
+    <div class="form-check-reverse form-switch">
+      <input class="form-check-input" type="checkbox" role="switch" id="switchCheckDefault">
+      <label class="form-check-label" for="switchCheckDefault">Display total after taxes</label>
+    </div>
+  </div>
+
+</div>
+
+
+
+
+<div class="row row-cols-lg-3 row-cols-md-3 row-cols-sm-1 mt-3">
   <% for (let listing of listings) { %>
     <div class="col">
       <a href="/listings/<%=listing._id%>" class="listing-link">
@@ -17,6 +128,7 @@
                 Price not available
               <% } %>
             </h6>
+            <i class="tax-info"> &nbsp; &nbsp;+18% GST</i>
             <p class="card-text"><%= listing.description %></p>
             <a href="/listings/<%= listing._id %>" class="btn btn-primary">View Details</a>
           </div>
@@ -25,5 +137,22 @@
     </div>
   <% } %>
 </div>
+
+<script>
+  
+  let taxSwitch = document.getElementById("switchCheckDefault");
+  taxSwitch.addEventListener("click", () => {
+    let taxInfo = document.getElementsByClassName("tax-info");
+    for(info of taxInfo) {
+      if(info.style.display != "inline"){
+        info.style.display = "inline";
+      } else {
+        info.style.display = "none";
+      }
+    }  
+  });
+
+</script> 
+
 
 

@@ -13,7 +13,7 @@ async function main() {
     if (!listing.image || !listing.image.url) {
       listing.image = {
         url: "https://placehold.co/600x400/gray/white/png?text=No+Image",
-        filename: "default"
+        filename: "default",
       };
       await listing.save();
       console.log("🖼 Added default image to:", listing.title);
@@ -22,7 +22,7 @@ async function main() {
 
   console.log("🎉 All listings fixed!");
   mongoose.connection.close();
-}
+};
 
 main().catch(err => {
   console.error("❌ Error:", err);

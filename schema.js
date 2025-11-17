@@ -8,10 +8,20 @@ module.exports.listingSchema = Joi.object({
     location: Joi.string().required(),
     country: Joi.string().required(),
     price: Joi.number().min(0).required(),
-    image: Joi.object({
-      url: Joi.string().uri().allow("", null),   // ✅ expects nested "url"
-      filename: Joi.string().allow("", null)
-    }).required()
+
+    category: Joi.string()
+      .valid(
+        "Trending",
+        "Rooms",
+        "Adventure",
+        "Nature",
+        "Castles",
+        "Amazing Pools",
+        "Camping",
+        "Farms",
+        "Arctic"
+      )
+      .required()
   }).required()
 });
 
@@ -22,4 +32,6 @@ module.exports.reviewSchema = Joi.object({
     comment: Joi.string().required()
   }).required()
 });
+
+
 

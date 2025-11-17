@@ -32,7 +32,7 @@
 <body>
   <div class="form-container">
     <h3>Create New Listing</h3>
-    <form method="POST" action="/listings" novalidate class="needs-validation">
+    <form method="POST" action="/listings" novalidate class="needs-validation" enctype="multipart/form-data">
       
       <div class="mb-3">
         <label for="title" class="form-label">Title</label>
@@ -47,11 +47,12 @@
         <textarea name="listing[description]" id="description" placeholder="Write a short description" class="form-control" rows="3" required></textarea>
         <div class="invalid-feedback">Please provide a description.</div>
       </div>
-      
-      <div class="mb-3">
-        <label for="image" class="form-label">Image URL</label>
-        <input name="listing[image][url]" id="image" placeholder="Enter image URL" type="text" class="form-control">
+
+       <div class="mb-3">
+        <label for="image" class="form-label">Upload listing image</label>
+        <input name="listing[image]" id="image"  type="file" class="form-control">
         <div class="invalid-feedback">Please provide a valid image URL.</div>
+        required
       </div>
 
       <div class="mb-3">
@@ -73,6 +74,24 @@
         <input name="listing[location]" id="location" placeholder="Enter location" type="text" class="form-control" required>
         <div class="invalid-feedback">Please provide a location.</div>
       </div>
+
+      <div class="mb-3">
+        <label for="category" class="form-label">Category</label>
+        <select name="listing[category]" id="category" class="form-control" required>
+        <option selected disabled value="">Select a Category</option>
+        <option value="Trending">Trending</option>
+        <option value="Rooms">Rooms</option>
+        <option value="Adventure">Adventure</option>
+        <option value="Nature">Nature</option>
+        <option value="Castles">Castles</option>
+        <option value="Amazing Pools">Amazing Pools</option>
+        <option value="Camping">Camping</option>
+        <option value="Farms">Farms</option>
+        <option value="Arctic">Arctic</option>
+      </select>
+    <div class="invalid-feedback">Please select a category.</div>
+</div>
+
       
       <div class="d-grid">
         <button class="btn btn-dark btn-lg">Add Listing</button>

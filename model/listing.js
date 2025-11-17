@@ -13,14 +13,8 @@ const listingSchema = new Schema({
         trim: true,
     },
     image: {
-        filename: {
-            type: String,
-            default: "listingimage",
-        },
-        url: {
-            type: String,
-            default: "https://placehold.co/600x400/gray/white/png?text=No+Image",
-        }
+        url: String,
+        filename: String,
     },
     price: {
         type: Number,
@@ -37,6 +31,22 @@ const listingSchema = new Schema({
     owner: {
         type: Schema.Types.ObjectId,
         ref: "User",
+    },
+    category: {
+        type: String,
+        enum: [
+           "Trending" ,
+           "Rooms",
+           "Adventure",
+           "Nature",
+           "Castles",
+           "Amazing Pools",
+            "Camping",
+            "Farms",
+            "Arctic",
+        ],
+        default: "Trending"
+
     },
 }, { timestamps: true });
 
