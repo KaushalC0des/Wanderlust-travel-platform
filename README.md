@@ -64,7 +64,7 @@ wanderlust/
 
 Follow these steps to run the project locally:
 
-### 1️⃣ Clone the repository
+1️⃣ Clone the repository
 ```bash
 git clone https://github.com/your-username/wanderlust.git
 cd wanderlust
