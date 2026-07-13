@@ -11,7 +11,7 @@ const { isLoggedIn } = require("../middleware.js");
 router.post("/create-order", isLoggedIn, async (req, res) => {
   const { amount } = req.body;
   const razorpay = new Razorpay({         
-    key_id: process.env.RAZORPAY_KEY_iD,
+    key_id: process.env.RAZORPAY_KEY_id,
     key_secret: process.env.RAZORPAY_KEY_SECRET,
   });
  try {
