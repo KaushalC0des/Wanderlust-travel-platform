@@ -1,0 +1,121 @@
+<style>
+  .airbnb-search-box {
+    border: 1px solid #ddd;
+    padding: 10px 20px;
+    border-radius: 40px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    background: white;
+    transition: 0.2s ease;
+  }
+  .airbnb-search-box:hover {
+    box-shadow: 0 4px 14px rgba(0,0,0,0.15);
+  }
+  .airbnb-input {
+    border: none;
+    outline: none;
+    font-size: 1rem;
+    width: 100%;
+  }
+  .airbnb-search-btn {
+    background-color: #ff385c;
+    border-radius: 50%;
+    padding: 10px 12px;
+    color: white;
+    border: none;
+  }
+  .search-wide {
+    width: 550px;
+    max-width: 650px;
+  }
+  @media (min-width: 1400px) {
+    .search-wide { width: 650px; }
+  }
+  @media (max-width: 992px) {
+    .search-wide { width: 420px; }
+  }
+
+  /* ✅ ADDED: Mobile menu styling */
+  @media (max-width: 767px) {
+    .collapse.navbar-collapse {
+      background: white;
+      border-top: 1px solid #eee;
+      padding: 10px 0;
+      margin-top: 8px;
+    }
+    .navbar-nav .nav-link {
+      padding: 10px 16px;
+      font-size: 1rem;
+      border-bottom: 1px solid #f1f1f1;
+    }
+    .navbar-nav .nav-link:last-child {
+      border-bottom: none;
+    }
+  }
+</style>
+
+<nav class="navbar navbar-expand-md bg-white sticky-top py-2" style="box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
+  <div class="container-fluid d-flex align-items-center flex-wrap">
+
+    <!-- LEFT: LOGO -->
+    <a class="navbar-brand fw-bold text-danger me-3" href="/listings" style="font-size: 1.4rem;">
+      <i class="fa-solid fa-house-chimney"></i> WanderLust
+    </a>
+
+    <!-- CENTER: SEARCH BAR (desktop only) -->
+    <div class="d-none d-md-flex flex-grow-1 justify-content-center">
+      <form action="/search" method="GET" class="d-flex align-items-center airbnb-search-box search-wide">
+        <input class="airbnb-input" type="search" name="q" placeholder="Search Destinations">
+        <button class="airbnb-search-btn ms-2" type="submit">
+          <i class="fa-solid fa-magnifying-glass"></i>
+        </button>
+      </form>
+    </div>
+
+    
+    <button class="navbar-toggler ms-auto" type="button" 
+            data-bs-toggle="collapse" 
+            data-bs-target="#mainMenu"
+            aria-controls="mainMenu"
+            aria-expanded="false"
+            aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    
+    <div class="collapse navbar-collapse w-100" id="mainMenu">
+
+      <!-- MOBILE SEARCH BAR -->
+      <form action="/search" method="GET" 
+            class="d-flex d-md-none airbnb-search-box my-3 mx-2 w-100 align-items-center">
+        <input class="airbnb-input" type="search" name="q" placeholder="Search Destinations">
+        <button class="airbnb-search-btn ms-2" type="submit">
+          <i class="fa-solid fa-magnifying-glass"></i>
+        </button>
+      </form>
+
+      
+      <ul class="navbar-nav ms-md-auto">
+        <li class="nav-item">
+          <a class="nav-link" href="/listings/new">Add new Listing</a>
+        </li>
+        <% if (!currUser) { %>
+          <li class="nav-item">
+            <a class="nav-link" href="/signup"><b>Sign up</b></a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/login"><b>Login</b></a>
+          </li>
+        <% } else { %>
+          <li class="nav-item">
+            <a class="nav-link" href="/logout"><b>Log out</b></a>
+          </li>
+        <% } %>
+      </ul>
+
+    </div>
+  </div>
+</nav>
+
+
+
+
