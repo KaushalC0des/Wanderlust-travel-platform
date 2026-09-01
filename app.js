@@ -25,11 +25,15 @@ const userRouter = require("./routes/user.js");
 const paymentRouter = require("./routes/payment.js");
 const { isLoggedIn, isOwner, isReviewAuthor } = require("./middleware.js");
 
+const aiRoutes = require("./routes/ai.js");
+
 // ================== DATABASE CONNECTION ==================
 const dbUrl = process.env.ATLASDB_URL;
 
 async function main() {
   console.log("🔗 Connecting to:", process.env.ATLASDB_URL);
+  const conn = await mongoose.connect(dbUrl);
+  console.log("Database:", conn.connection.name);
   await mongoose.connect(dbUrl);
 }
 main()
@@ -76,6 +80,7 @@ const sessionOptions = {
 
 app.use(session(sessionOptions));
 app.use(flash());
+app.use("/ai", aiRoutes)
 
 app.use(passport.initialize());
 app.use(passport.session());

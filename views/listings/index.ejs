@@ -51,6 +51,170 @@
   display: none;
 }
 
+/* ================= AI CHAT ================= */
+
+#ai-button {
+  position: fixed;
+  right: 30px;
+  bottom: 30px;
+
+  width: 60px;
+  height: 60px;
+
+  border: none;
+  border-radius: 50%;
+
+  background: #ff385c;
+  color: white;
+
+  font-size: 28px;
+
+  cursor: pointer;
+
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.25);
+
+  z-index: 1000;
+}
+
+#ai-button:hover {
+  transform: scale(1.05);
+}
+
+
+/* Chat Window */
+
+#ai-chat-box {
+  position: fixed;
+
+  right: 30px;
+  bottom: 100px;
+
+  width: 360px;
+  height: 500px;
+
+  background: white;
+
+  border-radius: 15px;
+
+  box-shadow: 0 5px 25px rgba(0, 0, 0, 0.25);
+
+  display: none;
+
+  flex-direction: column;
+
+  overflow: hidden;
+
+  z-index: 1000;
+}
+
+
+/* Header */
+
+#ai-chat-header {
+  background: #ff385c;
+  color: white;
+
+  padding: 15px;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  font-weight: bold;
+}
+
+#ai-close {
+  background: none;
+  border: none;
+
+  color: white;
+
+  font-size: 25px;
+
+  cursor: pointer;
+}
+
+
+/* Messages */
+
+#ai-messages {
+  flex: 1;
+
+  padding: 15px;
+
+  overflow-y: auto;
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 10px;
+}
+
+.ai-message {
+  background: #f1f1f1;
+
+  padding: 10px 12px;
+
+  border-radius: 10px;
+
+  max-width: 85%;
+
+  font-size: 14px;
+}
+
+.user-message {
+  background: #ff385c;
+  color: white;
+
+  padding: 10px 12px;
+
+  border-radius: 10px;
+
+  max-width: 85%;
+
+  align-self: flex-end;
+
+  font-size: 14px;
+}
+
+
+/* Input */
+
+#ai-input-area {
+  display: flex;
+
+  padding: 10px;
+
+  border-top: 1px solid #ddd;
+
+  gap: 8px;
+}
+
+#ai-input {
+  flex: 1;
+
+  border: 1px solid #ddd;
+
+  border-radius: 20px;
+
+  padding: 10px 15px;
+
+  outline: none;
+}
+
+#ai-send {
+  border: none;
+
+  background: #ff385c;
+  color: white;
+
+  border-radius: 20px;
+
+  padding: 8px 15px;
+
+  cursor: pointer;
+}
+
 </style>
 
 <div id="filters">
@@ -138,6 +302,47 @@
   <% } %>
 </div>
 
+
+<!-- WanderLust AI -->
+
+<!-- AI Assistant Button -->
+<button id="ai-button" title="WanderLust AI">
+  🤖
+</button>
+
+<!-- AI Chat Window -->
+<div id="ai-chat-box">
+
+  <div id="ai-chat-header">
+    <span>🤖 WanderLust AI</span>
+    <button id="ai-close">×</button>
+  </div>
+
+  <div id="ai-messages">
+    <div class="ai-message">
+      Hi! 👋 I'm WanderLust AI.<br>
+      Ask me about hotels, prices, locations, categories, etc.
+    </div>
+  </div>
+
+  <div id="ai-input-area">
+    <input
+      type="text"
+      id="ai-input"
+      placeholder="Ask about hotels..."
+      autocomplete="off"
+    />
+
+    <button id="ai-send">
+      Send
+    </button>
+  </div>
+
+</div>
+
+<script src="/js/ai.js"></script>
+
+
 <script>
   
   let taxSwitch = document.getElementById("switchCheckDefault");
@@ -153,6 +358,7 @@
   });
 
 </script> 
+
 
 
 
