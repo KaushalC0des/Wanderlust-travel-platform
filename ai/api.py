@@ -1,12 +1,16 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
-
-from langchain_ollama import OllamaLLM
+from dotenv import load_dotenv
+import os
+from pathlib import Path
+from langchain_openai import ChatOpenAI
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.messages import HumanMessage, AIMessage
 
-from rag import search_hotels
+from rag import search_hotels, search_hotels_by_names
 
+load_dotenv(Path(__file__).resolve().parent.parent / ".env")
+print("NVIDIA KEY LOADED:", bool(os.getenv("NVIDIA_API_KEY")))
 
 app = FastAPI()
 
@@ -16,9 +20,11 @@ class ChatRequest(BaseModel):
     session_id: str
 
 
-
-model = OllamaLLM(model="llama3.2")
-
+model = ChatOpenAI(
+    model="meta/muse-glimmer-30b",
+    base_url="https://integrate.api.nvidia.com/v1",
+    api_key=os.getenv("NVIDIA_API_KEY")
+)
 
 # -----------------------------
 # Query Rewriter
@@ -42,23 +48,17 @@ Preserve the user's original intent.
 Do NOT invent prices, filters, locations, or requirements
 that were not stated by the user.
 
-If the user asks to compare previously mentioned hotels,
-return ONLY the names of those hotels, one per line.
+If the user asks about previously mentioned hotels,
+return their exact names, one per line.
 
-Do not add words such as:
-"hotel comparison"
-"price comparison"
-"best hotel"
-or any other instructions.
+If the user introduces a new price, location, category,
+or other search constraint, preserve that constraint
+in the rewritten query.
 
-Example:
-
-Misty Mountain Cottage
-Infinity Blue Horizon Villa
-Blue Lagoon Oceanfront Stay
+Do not add explanations, comparison instructions,
+quotes, or extra words.
 
 Do not answer the question.
-Only return the rewritten search query.
 
 Conversation History:
 {history}
@@ -70,6 +70,14 @@ Latest Question:
 rewrite_prompt = ChatPromptTemplate.from_template(rewrite_template)
 
 rewrite_chain = rewrite_prompt | model
+
+def extract_hotel_names(search_query):
+
+    return [
+        line.strip()
+        for line in search_query.split("\n")
+        if line.strip()
+    ]
 
 
 # -----------------------------
@@ -83,7 +91,19 @@ Answer the user's question using ONLY the hotel information provided below.
 
 You may compare the provided hotels and make a recommendation when the user asks which option is better or which one they should prefer.
 
-Base your recommendation only on information present in the provided hotel information.
+When recommending a hotel, compare the available information such as:
+- price
+- location
+- category
+- description
+- review information, if available
+
+Explain briefly why you recommend the option.
+
+Base your recommendation ONLY on information present in the provided hotel information.
+
+If the available information is not enough to determine a clear winner,
+say that there is no clear winner and explain the available differences.
 
 Do NOT invent:
 - amenities
@@ -143,6 +163,19 @@ conversation_histories = {}
 # Routes
 # -----------------------------
 
+def is_casual_message(question):
+    casual_message = [
+        "hii",
+        "hi",
+        "hiii",
+        "hello",
+        "hey",
+        "thanks",
+        "thak you"
+    ]
+
+    return question.lower().strip() in casual_message
+
 @app.get("/")
 def home():
     return {"message": "WanderLust AI is running"}
@@ -154,6 +187,11 @@ def chat(request: ChatRequest):
     question = request.message
     session_id = request.session_id
 
+    if is_casual_message(question):
+        return {
+            "response": "Hi! 👋 I'm WanderLust AI. I can help you find hotels based on price, location, category, and other details."
+        }
+
     if session_id not in conversation_histories:
         conversation_histories[session_id] = []
 
@@ -161,10 +199,14 @@ def chat(request: ChatRequest):
     
     # Rewrite follow-up questions
     if history:
-        search_query = rewrite_chain.invoke({
-            "history": history,
-            "question": question
-        })
+      print("Calling rewriter model...")
+      rewritten = rewrite_chain.invoke({
+          "history": history,
+          "question": question
+      })
+      print("Rewrite model finished");
+      print("Rewrite response:", rewritten.content)
+      search_query = rewritten.content
     else:
         search_query = question
 
@@ -172,9 +214,12 @@ def chat(request: ChatRequest):
     print("ReWritten Search Query:", search_query)
 
     # Search ChromaDB
-    documents = search_hotels(search_query)
+    if history:
+        hotel_names = extract_hotel_names(search_query)
+        documents = search_hotels_by_names(hotel_names)
+    else :
+          documents = search_hotels(search_query)
 
-    # Convert documents into clean text
     hotel_context = format_hotels(documents)
 
     # Generate final AI response
@@ -186,8 +231,8 @@ def chat(request: ChatRequest):
 
     # Save conversation
     history.append(HumanMessage(content=question))
-    history.append(AIMessage(content=response))
+    history.append(AIMessage(content=response.content))
 
     return {
-        "response": response
+        "response": response.content
     }

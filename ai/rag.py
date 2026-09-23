@@ -41,7 +41,7 @@ def search_hotels(question):
         k=3
     )
 
-def search_hotels_by_name(names):
+def search_hotels_by_names(names):
 
     results = []
 
@@ -49,7 +49,10 @@ def search_hotels_by_name(names):
 
         documents = vector_store.similarity_search(
             name,
-            k=1
+            k=1,
+            filter={
+                "hotel_name": name
+            }
         )
 
         if documents:
@@ -71,14 +74,20 @@ def search_hotels_by_name(names):
 
 if __name__ == "__main__":
 
-    results = vector_store.similarity_search(
+    names = [
         "Misty Mountain Cottage",
-        k=1
-    )
+        "Infinity Blue Horizon Villa",
+        "Blue Lagoon Oceanfront Stay"
+    ]
+
+    results = search_hotels_by_names(names)
 
     for doc in results:
-        print("CONTENT:")
+
+        print("\n==============================")
+
         print(doc.page_content)
 
         print("\nMETADATA:")
+
         print(doc.metadata)
