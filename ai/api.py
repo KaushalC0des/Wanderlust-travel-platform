@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 from dotenv import load_dotenv
 import os
@@ -6,6 +7,7 @@ from pathlib import Path
 from langchain_openai import ChatOpenAI
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.messages import HumanMessage, AIMessage
+
 
 from rag import search_hotels, search_hotels_by_names
 
@@ -223,16 +225,22 @@ def chat(request: ChatRequest):
     hotel_context = format_hotels(documents)
 
     # Generate final AI response
-    response = chain.invoke({
+    full_response = ""
+    for chunk in chain.stream({
         "history": history,
         "hotels": hotel_context,
         "question": question
-    })
+    }):
+        print(chunk.content, end="", flush=True)
+
+    print()
+    
+    
 
     # Save conversation
     history.append(HumanMessage(content=question))
-    history.append(AIMessage(content=response.content))
+    history.append(AIMessage(content=full_response))
 
     return {
-        "response": response.content
+        "response": full_response
     }
