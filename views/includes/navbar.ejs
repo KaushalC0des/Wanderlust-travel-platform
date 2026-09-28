@@ -1,173 +1,392 @@
 <style>
-.navbar{
-    background:#fff;
-    border-bottom:1px solid #ececec;
-    box-shadow:0 2px 12px rgba(0,0,0,.05);
-    padding:.75rem 0;
+
+.navbar {
+    background: #fff;
+    border-bottom: 1px solid #ececec;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
+    padding: 0.75rem 0;
+    position: sticky;
+    top: 0;
+    z-index: 1030;
 }
 
-.navbar-brand{
-    font-size:1.6rem;
-    font-weight:700;
-    color:#ff385c !important;
+.navbar > .container {
+    max-width: 1400px;
 }
 
-.navbar-brand i{
-    margin-right:6px;
+
+
+.navbar-brand {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: #ff385c !important;
+    white-space: nowrap;
 }
 
-.airbnb-search-box{
-    display:flex;
-    align-items:center;
-    width:100%;
-    max-width:500px;
-    border:1px solid #ddd;
-    border-radius:40px;
-    padding:8px 10px 8px 20px;
-    background:#fff;
-    transition:.25s;
+.navbar-brand i {
+    margin-right: 6px;
 }
 
-.airbnb-search-box:hover{
-    box-shadow:0 4px 16px rgba(0,0,0,.12);
+
+
+.navbar-collapse {
+    align-items: center;
 }
 
-.airbnb-input{
-    flex:1;
-    border:none;
-    outline:none;
-    background:none;
-    font-size:.95rem;
+.navbar-search-wrapper {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    padding: 0 35px;
 }
 
-.airbnb-search-btn{
-    border:none;
-    background:#ff385c;
-    color:white;
-    width:42px;
-    height:42px;
-    border-radius:50%;
-    transition:.2s;
+
+
+.airbnb-search-box {
+    display: flex;
+    align-items: center;
+
+    width: 100%;
+    max-width: 620px;
+
+    border: 1px solid #ddd;
+    border-radius: 40px;
+
+    padding: 8px 10px 8px 22px;
+
+    background: #fff;
+
+    transition: 0.25s;
 }
 
-.airbnb-search-btn:hover{
-    transform:scale(1.05);
+.airbnb-search-box:hover {
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
 }
 
-.navbar-nav .nav-link{
-    font-weight:500;
-    color:#333 !important;
-    margin-left:10px;
+.airbnb-search-box:focus-within {
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.14);
+    border-color: #ccc;
 }
 
-.navbar-nav .nav-link:hover{
-    color:#ff385c !important;
+.airbnb-input {
+    flex: 1;
+
+    width: 100%;
+
+    border: none;
+    outline: none;
+    background: transparent;
+
+    font-size: 1rem;
+    color: #333;
 }
 
-.add-btn{
-    border:1px solid #ff385c;
-    color:#ff385c !important;
-    border-radius:30px;
-    padding:7px 18px !important;
-    transition:.2s;
+.airbnb-input::placeholder {
+    color: #777;
 }
 
-.add-btn:hover{
-    background:#ff385c;
-    color:white !important;
+.airbnb-search-btn {
+    flex-shrink: 0;
+
+    border: none;
+    background: #ff385c;
+    color: white;
+
+    width: 44px;
+    height: 44px;
+
+    border-radius: 50%;
+
+    transition: 0.2s;
+
+    cursor: pointer;
 }
 
-@media(max-width:768px){
-
-.airbnb-search-box{
-    max-width:100%;
-    margin-top:15px;
+.airbnb-search-btn:hover {
+    transform: scale(1.05);
 }
 
-.navbar-collapse{
-    padding-top:15px;
+
+
+.navbar-nav {
+    white-space: nowrap;
 }
 
-.navbar-nav .nav-link{
-    margin-left:0;
-    padding:12px 5px;
+.navbar-nav .nav-link {
+    font-weight: 500;
+    color: #333 !important;
+    margin-left: 10px;
 }
+
+.navbar-nav .nav-link:hover {
+    color: #ff385c !important;
 }
-</style> 
+
+
+
+.add-btn {
+    border: 1px solid #ff385c;
+
+    color: #ff385c !important;
+
+    border-radius: 30px;
+
+    padding: 7px 18px !important;
+
+    transition: 0.2s;
+}
+
+.add-btn:hover {
+    background: #ff385c;
+    color: white !important;
+}
+
+
+
+.navbar-toggler {
+    border: 2px solid #555;
+    border-radius: 10px;
+
+    padding: 7px 10px;
+}
+
+.navbar-toggler:focus {
+    box-shadow: none;
+}
+
+
+
+@media (max-width: 991px) {
+
+    .navbar-search-wrapper {
+        padding: 15px 0;
+    }
+
+    .airbnb-search-box {
+        max-width: 100%;
+    }
+
+    .navbar-collapse {
+        margin-top: 12px;
+
+        background: #fff;
+
+        border-top: 1px solid #eee;
+        padding: 10px 0 15px;
+
+        box-shadow: 0 8px 15px rgba(0, 0, 0, 0.06);
+
+        position: relative;
+        z-index: 1031;
+    }
+
+    .navbar-nav {
+        width: 100%;
+    }
+
+    .navbar-nav .nav-link {
+        margin-left: 0;
+        padding: 12px 10px;
+    }
+
+    .navbar-nav .add-btn {
+        display: inline-block;
+        margin-bottom: 5px;
+    }
+}
+
+
+
+@media (max-width: 576px) {
+
+    .navbar {
+        padding: 0.7rem 0;
+    }
+
+    .navbar > .container {
+        padding-left: 15px;
+        padding-right: 15px;
+    }
+
+    .navbar-brand {
+        font-size: 1.4rem;
+    }
+
+    .navbar-collapse {
+        margin-left: -15px;
+        margin-right: -15px;
+
+        padding: 12px 15px 18px;
+
+        background: #fff;
+
+        border-top: 1px solid #eee;
+        border-bottom: 1px solid #eee;
+
+        box-shadow: 0 8px 18px rgba(0, 0, 0, 0.08);
+    }
+
+    .navbar-search-wrapper {
+        padding: 5px 0 15px;
+    }
+
+    .airbnb-search-box {
+        width: 100%;
+        max-width: none;
+
+        padding-left: 17px;
+    }
+
+    .airbnb-input {
+        font-size: 0.95rem;
+    }
+
+    .airbnb-search-btn {
+        width: 42px;
+        height: 42px;
+    }
+
+    .navbar-nav .nav-link {
+        padding: 12px 5px;
+    }
+}
+</style>
+
 
 <nav class="navbar navbar-expand-lg sticky-top">
 
-  <div class="container">
+    <div class="container">
 
-  <a class="navbar-brand" href="/listings">
-  <i class="fa-solid fa-house-chimney"></i>
-  WanderLust
-  </a>
 
-  <button class="navbar-toggler"
-  type="button"
-  data-bs-toggle="collapse"
-  data-bs-target="#mainMenu">
-  <span class="navbar-toggler-icon"></span>
-  </button>
+        <a class="navbar-brand" href="/listings">
 
-  <div class="collapse navbar-collapse" id="mainMenu">
+            <i class="fa-solid fa-house-chimney"></i>
 
-  <div class="mx-auto my-3 my-lg-0">
+            WanderLust
 
-  <form action="/search" method="GET" class="airbnb-search-box">
+        </a>
 
-  <input
-  type="search"
-  name="q"
-  class="airbnb-input"
-  placeholder="Search destinations">
 
-  <button class="airbnb-search-btn">
-  <i class="fa-solid fa-magnifying-glass"></i>
-  </button>
+        <button
+            class="navbar-toggler"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#mainMenu"
+            aria-controls="mainMenu"
+            aria-expanded="false"
+            aria-label="Toggle navigation">
 
-  </form>
+            <span class="navbar-toggler-icon"></span>
 
-  </div>
+        </button>
 
-  <ul class="navbar-nav ms-auto align-items-lg-center">
 
-  <li class="nav-item">
-  <a class="nav-link add-btn" href="/listings/new">
-  Add Listing
-  </a>
-  </li>
+        <div class="collapse navbar-collapse" id="mainMenu">
 
-  <% if(!currUser){ %>
 
-  <li class="nav-item">
-  <a class="nav-link" href="/signup">
-  Sign Up
-  </a>
-  </li>
 
-  <li class="nav-item">
-  <a class="nav-link" href="/login">
-  Login
-  </a>
-  </li>
+            <div class="navbar-search-wrapper">
 
-  <% }else{ %>
+                <form
+                    action="/search"
+                    method="GET"
+                    class="airbnb-search-box">
 
-  <li class="nav-item">
-  <a class="nav-link" href="/logout">
-  Logout
-  </a>
-  </li>
+                    <input
+                        type="search"
+                        name="q"
+                        class="airbnb-input"
+                        placeholder="Search destinations"
+                        autocomplete="off">
 
-  <% } %>
+                    <button
+                        type="submit"
+                        class="airbnb-search-btn">
 
-  </ul>
+                        <i class="fa-solid fa-magnifying-glass"></i>
 
-  </div>
+                    </button>
 
-  </div>
+                </form>
+
+            </div>
+
+
+            <ul class="navbar-nav ms-auto align-items-lg-center">
+
+
+                <!-- ADD LISTING -->
+
+                <li class="nav-item">
+
+                    <a
+                        class="nav-link add-btn"
+                        href="/listings/new">
+
+                        Add Listing
+
+                    </a>
+
+                </li>
+
+
+                <% if(!currUser){ %>
+
+
+
+                    <li class="nav-item">
+
+                        <a
+                            class="nav-link"
+                            href="/signup">
+
+                            Sign Up
+
+                        </a>
+
+                    </li>
+
+
+                    <!-- LOGIN -->
+
+                    <li class="nav-item">
+
+                        <a
+                            class="nav-link"
+                            href="/login">
+
+                            Login
+
+                        </a>
+
+                    </li>
+
+
+                <% }else{ %>
+
+
+                    <!-- LOGOUT -->
+
+                    <li class="nav-item">
+
+                        <a
+                            class="nav-link"
+                            href="/logout">
+
+                            Logout
+
+                        </a>
+
+                    </li>
+
+
+                <% } %>
+
+            </ul>
+
+        </div>
+
+    </div>
 
 </nav>
 
