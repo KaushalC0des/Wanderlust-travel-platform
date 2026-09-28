@@ -225,22 +225,27 @@ def chat(request: ChatRequest):
     hotel_context = format_hotels(documents)
 
     # Generate final AI response
-    full_response = ""
-    for chunk in chain.stream({
-        "history": history,
-        "hotels": hotel_context,
-        "question": question
-    }):
-        print(chunk.content, end="", flush=True)
+    def generate_response():
 
-    print()
-    
-    
+        full_response = ""
 
-    # Save conversation
-    history.append(HumanMessage(content=question))
-    history.append(AIMessage(content=full_response))
+        for chunk in chain.stream({
+            "history": history,
+            "hotels": hotel_context,
+            "question": question
+        }):
 
-    return {
-        "response": full_response
-    }
+            content = chunk.content
+
+            if content:
+                full_response += content
+                yield content
+
+        history.append(HumanMessage(content=question))
+        history.append(AIMessage(content=full_response))
+
+
+    return StreamingResponse(
+        generate_response(),
+        media_type="text/plain"
+    )
