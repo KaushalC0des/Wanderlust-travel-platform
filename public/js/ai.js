@@ -103,10 +103,18 @@ async function sendAIMessage() {
 
     } catch (error) {
 
-        console.error("AI request error:", error);
+        console.error("AI request error:", error.message);
 
-        loadingMessage.textContent =
-            "Sorry, I couldn't connect to the AI service.";
+        console.error("AI error code:", error.code);
+
+        if(error.response) {
+            console.error("AI response status:", error.response.status);
+            console.error("AI response data:", error.response.data);
+        }
+
+        resizeBy.status(500).json({
+            error: "AI service is unavailable"
+        });
     }
 }
 

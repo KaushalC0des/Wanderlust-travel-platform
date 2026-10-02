@@ -9,7 +9,7 @@ router.post("/chat", async (req, res) => {
     try {
 
         const response = await axios.post(
-            "http://127.0.0.1:8000/chat",
+            `${process.env.AI_SERVICE_URL}/chat`,
             {
                 message: req.body.message,
                 session_id: req.sessionID
