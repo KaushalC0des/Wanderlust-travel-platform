@@ -2,9 +2,10 @@ from dotenv import load_dotenv
 from pymongo import MongoClient
 from pathlib import Path
 from langchain_core.documents import Document 
-from langchain_ollama import OllamaEmbeddings
+from langchain_core.embeddings import Embeddings
 from langchain_chroma import Chroma
 import os
+import requests
 
 
 load_dotenv(Path(__file__).resolve().parent.parent / ".env")
@@ -22,11 +23,55 @@ review_collection = db["reviews"]
 
 documents = []
 
-embeddings = OllamaEmbeddings (
-    model="mxbai-embed-large"
+class JinaEmbeddings(Embeddings):
+    
+    def __init__(self, api_key):
+        self.api_key = api_key
+        self.url = "https://api.jina.ai/v1/embeddings"
+        self.model = "jina-embeddings-v3"
+
+    def embed_query(self,  text):
+        response = request.post(
+            self.url,
+            headers={
+                "Content-Type": "application/json",
+                "Authorization": f"Bearer {self.api_key}"
+            },
+            json={
+                "model": self.model,
+                "task": "retrieval.query",
+                "input": [text]
+            }
+        )
+
+        response.raise_for_status()
+
+        return response.json()["data"][0]["embedding"]
+
+    def embed_documents(self, texts):
+        response = requests.post(
+            self.url,
+            headers={
+                "Content-Type": "application/json",\
+                "Authorization": f"Bearer {self.api_key}"
+            },
+            json={
+                "model": self.model,
+                "task": "retrieval.passage",
+                "input": texts
+            }
+        )
+
+        response.raise_for_status()
+
+        return [
+            item["embedding"]
+            for item in response.json()["data"]
+        ]
+
+embeddings = JinaEmbeddings(
+    os.getenv("JINA_API_KEY")
 )
-
-
 
 for listing in listings_collection.find():
 

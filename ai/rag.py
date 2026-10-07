@@ -1,9 +1,65 @@
 from langchain_chroma import Chroma
-from langchain_ollama import OllamaEmbeddings
+from langchain_core.embeddings import Embeddings
+from dotenv import load_dotenv
+from pathlib import Path
+import requests
+import os
 import re
 
-embeddings = OllamaEmbeddings(
-    model="mxbai-embed-large"
+load_dotenv(
+    Path(__file__).resolve().parent.parent / ".env"
+)
+
+
+class JinaEmbeddings(Embeddings):
+
+    def __init__(self, api_key):
+        self.api_key = api_key
+        self.url = "https://api.jina.ai/v1/embeddings"
+        self.model = "jina-embeddings-v3"
+
+    def embed_query(self, text):
+        response = requests.post(
+            self.url,
+            headers={
+                "Content-Type": "application/json",
+                "Authorization": f"Bearer {self.api_key}"
+            },
+            json={
+                "model": self.model,
+                "task": "retrieval.query",
+                "input": [text]
+            }
+        )
+
+        response.raise_for_status()
+
+        return response.json()["data"][0]["embedding"]
+
+    def embed_documents(self, texts):
+        response = requests.post(
+            self.url,
+            headers={
+                "Content-Type": "application/json",
+                "Authorization": f"Bearer {self.api_key}"
+            },
+            json={
+                "model": self.model,
+                "task": "retrieval.passage",
+                "input": texts
+            }
+        )
+
+        response.raise_for_status()
+
+        return [
+            item["embedding"]
+            for item in response.json()["data"]
+        ]
+
+
+embeddings = JinaEmbeddings(
+    os.getenv("JINA_API_KEY")
 )
 
 vector_store = Chroma(
@@ -58,19 +114,6 @@ def search_hotels_by_names(names):
         if documents:
             results.append(documents[0])
     return results
-
-# if __name__ == "__main__":
-
-#     while True:
-
-#         question = input("Ask a question (q to quit): ")
-
-#         if question.lower() == "q":
-#             break
-
-#         results = search_hotels(question)
-
-#         print(results)
 
 if __name__ == "__main__":
 
