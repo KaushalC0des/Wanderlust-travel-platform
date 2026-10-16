@@ -38,10 +38,11 @@ router.post("/chat", async (req, res) => {
 
     } catch (error) {
 
-        console.error(
-            "AI service error:",
-            error.message
-        );
+        console.error("AI service error: ", {
+            message: error.message,
+            status : error.response?.status,
+            responseData: error.response?.data
+        });
 
         if (!res.headersSent) {
 
